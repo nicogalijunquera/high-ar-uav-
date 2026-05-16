@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>High Aspect Ratio UAV | Nicolas Gali — Brunel University London</title>
+<meta name="description" content="Aerodynamic and structural optimisation of a high aspect ratio UAV wing achieving +27.51% L/D improvement over the BrUAS 2022 baseline through AR selection, adjoint aerofoil optimisation, and winglet design.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;color:#111827;background:#fff;line-height:1.7;font-size:16px;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:#002147;text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── BRUNEL COLOUR TOKENS ── */
+:root{
+  --navy:#002147;
+  --navy2:#003066;
+  --red:#C8102E;
+  --red2:#A00D25;
+  --red-light:#FDECEA;
+  --sky:#EBF0F8;
+  --light:#F6F7F9;
+  --border:#DDE3EC;
+  --text:#111827;
+  --muted:#596880;
+  --white:#FFFFFF;
+  --r:10px;
+  --sh:0 4px 24px rgba(0,33,71,0.13);
+  --sh2:0 2px 10px rgba(0,33,71,0.08);
+}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:200;
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:58px;
+  box-shadow:0 2px 14px rgba(0,0,0,0.35);
+}
+.nav-logo{font-weight:800;font-size:0.88rem;color:#fff;letter-spacing:-0.01em;white-space:nowrap;display:flex;align-items:center;gap:10px}
+.nav-logo .logo-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red)}
+.nav-links{display:flex;gap:2px}
+.nav-links a{
+  color:#94a3b8;font-size:0.78rem;font-weight:500;padding:6px 12px;
+  border-radius:6px;transition:all 0.2s;white-space:nowrap
+}
+.nav-links a:hover{background:rgba(255,255,255,0.1);color:#fff;text-decoration:none}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(160deg,#001020 0%,#002147 45%,#003066 75%,#001830 100%);
+  color:#fff;padding:100px 24px 84px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:url('Figures/fluidflow_3D.png') center/cover no-repeat;
+  opacity:0.10;pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:4px;
+  background:var(--red);
+}
+.hero-inner{position:relative;max-width:920px;margin:0 auto;text-align:center}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,16,46,0.18);border:1px solid rgba(200,16,46,0.45);
+  border-radius:40px;padding:6px 18px;font-size:0.78rem;font-weight:700;
+  color:#fca5a5;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:26px;
+}
+.hero h1{
+  font-size:clamp(1.85rem,5vw,3.1rem);font-weight:900;line-height:1.15;
+  letter-spacing:-0.02em;margin-bottom:18px;
+}
+.hero h1 em{color:#fff;font-style:normal;border-bottom:3px solid var(--red);padding-bottom:2px;}
+.hero-desc{
+  font-size:1.05rem;color:#9ab0cb;max-width:700px;
+  margin:0 auto 48px;font-weight:400;line-height:1.8;
+}
+.hero-desc strong{color:#fff}
+.hero-kpis{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:14px;
+  margin-bottom:48px;
+}
+.kpi{
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.14);
+  backdrop-filter:blur(8px);
+  border-radius:var(--r);padding:22px 30px;min-width:155px;text-align:center;
+  transition:border-color 0.2s;
+}
+.kpi:hover{border-color:rgba(200,16,46,0.6)}
+.kpi-val{font-size:2.2rem;font-weight:900;color:var(--white);line-height:1}
+.kpi-val.red{color:#fca5a5}
+.kpi-lbl{font-size:0.72rem;color:#7A9BBD;margin-top:6px;font-weight:500;line-height:1.4}
+.hero-byline{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:8px 22px;
+  font-size:0.82rem;color:#4d6a85;
+}
+.hero-byline span{display:flex;align-items:center;gap:5px}
+
+/* ── LAYOUT ── */
+section{padding:76px 24px}
+section:nth-child(even){background:var(--light)}
+.wrap{max-width:1040px;margin:0 auto}
+.sec-label{
+  font-size:0.7rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--red);margin-bottom:10px;
+}
+.sec-title{
+  font-size:clamp(1.45rem,3vw,1.9rem);font-weight:800;color:var(--navy);
+  letter-spacing:-0.02em;line-height:1.25;margin-bottom:14px;
+}
+.sec-intro{
+  font-size:0.97rem;color:var(--text);max-width:740px;
+  margin-bottom:14px;line-height:1.8;
+}
+.sec-plain{
+  font-size:0.97rem;color:var(--muted);max-width:740px;
+  margin-bottom:28px;line-height:1.8;
+}
+.divider{width:52px;height:3px;background:var(--red);border-radius:2px;margin-bottom:28px}
+
+/* ── PLAIN LANGUAGE BOX ── */
+.plain-box{
+  background:#fff;border-left:4px solid var(--red);
+  border-radius:0 8px 8px 0;padding:16px 20px;
+  font-size:0.93rem;line-height:1.75;margin-bottom:24px;
+  border:1px solid var(--border);border-left-width:4px;border-left-color:var(--red);
+  box-shadow:var(--sh2);
+}
+.plain-box .plain-label{
+  font-size:0.68rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--red);margin-bottom:6px;
+}
+.plain-box p{color:var(--text);font-size:0.93rem}
+
+/* ── CARDS ── */
+.card{
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--r);padding:26px;box-shadow:var(--sh2);
+}
+.card h3{font-size:0.95rem;font-weight:700;color:var(--navy);margin-bottom:12px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+
+/* ── FIGURES ── */
+.fig{margin:0}
+.fig img{
+  width:100%;border-radius:var(--r);
+  border:1px solid var(--border);box-shadow:var(--sh2);
+  background:#f8fafc;object-fit:contain;
+}
+.fig figcaption{
+  font-size:0.78rem;color:var(--muted);margin-top:9px;
+  font-style:italic;line-height:1.5;text-align:center;
+}
+.fig-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin:24px 0}
+.fig-wide img{max-height:460px;object-fit:contain}
+.fig-tall img{max-height:520px;object-fit:contain}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh2)}
+table{width:100%;border-collapse:collapse;font-size:0.875rem}
+th{background:var(--navy);color:#fff;padding:10px 14px;text-align:left;font-weight:600;font-size:0.82rem;letter-spacing:0.02em}
+td{padding:8px 14px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:#f5f7fa}
+tr.hl td{background:#FDECEA;font-weight:700;color:var(--navy);border-top:2px solid var(--red)}
+
+/* ── EQ BLOCK ── */
+.eq{
+  background:var(--navy);color:#93c5fd;
+  font-family:'Consolas','Courier New',monospace;
+  padding:16px 20px;border-radius:8px;
+  font-size:0.92rem;line-height:2;
+  border-left:4px solid var(--red);overflow-x:auto;margin:14px 0;
+}
+.eq-ref{font-size:0.72rem;color:#64748b;float:right;margin-top:2px;font-family:inherit}
+
+/* ── STEP FLOW ── */
+.steps{display:flex;flex-wrap:wrap;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh)}
+.step{
+  flex:1;min-width:150px;padding:22px 18px;text-align:center;
+  background:#fff;border-right:1px solid var(--border);position:relative;
+}
+.step:last-child{border-right:none}
+.step-n{font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)}
+.step-name{font-size:0.88rem;font-weight:700;color:var(--navy);margin:5px 0 4px;line-height:1.3}
+.step-val{font-size:1.7rem;font-weight:900;color:var(--red);line-height:1}
+.step-sub{font-size:0.72rem;color:var(--muted);margin-top:3px}
+.step.final{background:var(--navy)}
+.step.final .step-n{color:#94a3b8}
+.step.final .step-name{color:#c7d8ec}
+.step.final .step-val{font-size:2rem;color:#fca5a5}
+.step.final .step-sub{color:#64748b}
+
+/* ── TAGS ── */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.tag{font-size:0.72rem;padding:3px 11px;border-radius:20px;font-weight:600}
+.t-nv{background:#EBF0F8;color:var(--navy)}
+.t-rd{background:#FDECEA;color:var(--red2)}
+.t-gn{background:#dcfce7;color:#166534}
+.t-or{background:#fef3c7;color:#92400e}
+.t-pu{background:#ede9fe;color:#4c1d95}
+
+/* ── CALLOUT ── */
+.callout{background:var(--sky);border-left:4px solid var(--navy);border-radius:0 6px 6px 0;padding:12px 16px;font-size:0.88rem;margin:14px 0;line-height:1.7}
+.callout.red{background:var(--red-light);border-color:var(--red)}
+.callout.green{background:#f0fdf4;border-color:#22c55e}
+
+/* ── BANNER ── */
+.banner{
+  background:linear-gradient(120deg,var(--navy) 0%,var(--navy2) 100%);
+  border-radius:var(--r);padding:34px 38px;
+  display:flex;align-items:center;gap:30px;flex-wrap:wrap;
+  box-shadow:var(--sh);margin:28px 0;
+  border-left:5px solid var(--red);
+}
+.banner-num{font-size:3.8rem;font-weight:900;color:#fff;line-height:1;flex-shrink:0}
+.banner-text h3{font-size:1.15rem;color:#fff;font-weight:700;margin-bottom:6px}
+.banner-text p{font-size:0.88rem;color:#8aaec8}
+
+/* ── BULLET ── */
+ul.bl{padding-left:20px}
+ul.bl li{margin-bottom:7px;font-size:0.92rem;line-height:1.7}
+ul.bl li::marker{color:var(--red)}
+
+/* ── ACCORDION ── */
+.acc{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;box-shadow:var(--sh2)}
+.acc-h{
+  padding:15px 20px;cursor:pointer;background:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  font-weight:700;font-size:0.92rem;color:var(--navy);user-select:none;
+  transition:background 0.15s;gap:10px;
+}
+.acc-h:hover{background:#EBF0F8}
+.acc-h .ico{color:var(--muted);transition:transform 0.25s;flex-shrink:0}
+.acc-b{display:none;padding:22px;border-top:1px solid var(--border);background:#fafbfd}
+.acc-b.open{display:block}
+.ico.open{transform:rotate(180deg)}
+.acc-h .acc-badge{
+  font-size:0.65rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;
+  background:var(--red-light);color:var(--red);
+  padding:2px 9px;border-radius:20px;margin-left:6px;flex-shrink:0;
+}
+
+/* ── REFS ── */
+.refs{list-style:none}
+.refs li{
+  padding:10px 0;border-bottom:1px solid var(--border);
+  font-size:0.875rem;color:var(--muted);display:flex;gap:12px;
+}
+.refs li:last-child{border-bottom:none}
+.ref-n{font-weight:800;color:var(--navy);min-width:28px;flex-shrink:0}
+
+/* ── FOOTER ── */
+footer{background:var(--navy);color:#64748b;padding:54px 24px;text-align:center}
+.foot-inner{max-width:820px;margin:0 auto}
+footer h3{color:#c7d8ec;font-size:0.95rem;font-weight:700;margin-bottom:10px}
+footer p{font-size:0.82rem;line-height:1.75;margin-bottom:8px}
+.foot-div{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:24px 0}
+.foot-red-line{height:3px;background:var(--red);border-radius:2px;margin:24px auto;width:60px}
+.foot-copy{color:#334155;font-size:0.78rem}
+
+/* ── MISC ── */
+.muted{color:var(--muted)}
+.mt{margin-top:24px}
+.mb{margin-bottom:24px}
+.num-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:50%;
+  background:var(--navy);color:#fff;font-size:0.78rem;font-weight:700;flex-shrink:0;
+}
+.inline-stat{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--sky);border:1px solid #C8D8EA;
+  border-radius:6px;padding:5px 13px;font-size:0.85rem;
+  font-weight:600;color:var(--navy);margin:3px 3px 3px 0;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  nav{padding:0 16px}
+  .nav-links{display:none}
+  .hero{padding:64px 16px 52px}
+  section{padding:52px 16px}
+  .steps{flex-direction:column}
+  .step{border-right:none;border-bottom:1px solid var(--border)}
+  .step:last-child{border-bottom:none}
+  .banner{flex-direction:column;text-align:center;padding:26px}
+  .banner-num{font-size:2.6rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ NAV ══════════ -->
+<nav>
+  <div class="nav-logo"><span class="logo-dot"></span>Nicolas Gali &nbsp;/ High AR UAV</div>
+  <div class="nav-links">
+    <a href="#overview">Overview</a>
+    <a href="#theory">Theory</a>
+    <a href="#cfd">CFD</a>
+    <a href="#aerofoil">Aerofoil</a>
+    <a href="#winglet">Winglet</a>
+    <a href="#results">Results</a>
+    <a href="#structure">Structure</a>
+    <a href="#conclusions">Conclusions</a>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-pill">3rd Year Dissertation &nbsp;·&nbsp; Brunel University London</div>
+    <h1>High Aspect Ratio UAV Wing for<br><em>Improved Aerodynamic Efficiency</em></h1>
+    <p class="hero-desc">
+      Longer, thinner wings waste less energy fighting air resistance. This project shows exactly how much —
+      using virtual wind tunnel simulations and structural analysis to design a wing
+      that is <strong>27.51% more aerodynamically efficient</strong> than the existing Brunel drone team's baseline.
+    </p>
+    <div class="hero-kpis">
+      <div class="kpi"><div class="kpi-val red">+27.51%</div><div class="kpi-lbl">Aerodynamic efficiency<br>improvement</div></div>
+      <div class="kpi"><div class="kpi-val">21.66</div><div class="kpi-lbl">Final lift-to-drag<br>ratio</div></div>
+      <div class="kpi"><div class="kpi-val">AR 10</div><div class="kpi-lbl">Optimised aspect<br>ratio (wingspan/chord)</div></div>
+      <div class="kpi"><div class="kpi-val">5</div><div class="kpi-lbl">Wing configurations<br>simulated</div></div>
+      <div class="kpi"><div class="kpi-val">3</div><div class="kpi-lbl">Optimisation<br>steps</div></div>
+    </div>
+    <div class="hero-byline">
+      <span>Nicolas Gali</span>
+      <span>·</span>
+      <span>Brunel University London</span>
+      <span>·</span>
+      <span>Supervisor: Dr O. Adetoro</span>
+      <span>·</span>
+      <span>Module Tutor: Dr G. Alfano</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ OVERVIEW ══════════ -->
+<section id="overview">
+  <div class="wrap">
+    <div class="sec-label">Project Overview</div>
+    <h2 class="sec-title">Why Longer Wings Make Better Drones</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">The idea in plain terms</div>
+      <p>Think of an albatross versus a sparrow — the albatross has long, narrow wings and can glide for thousands of kilometres with barely a wingbeat. The sparrow's short, stubby wings work fine for quick bursts, but are inefficient for sustained flight. The same physics applies to drone wings. <strong>Aspect ratio</strong> (wingspan divided by wing width) is the key number: a higher aspect ratio means less energy wasted fighting air resistance, which translates directly to longer flight times, greater range, and more payload capacity.</p>
+    </div>
+
+    <div class="g2 mb">
+      <div>
+        <p class="sec-intro">
+          The Brunel UAS Society's 2022 competition drone has an aspect ratio of 6.3 — a reasonable
+          starting point, but conservative compared to what's aerodynamically achievable. The
+          <strong>IMechE UAS Challenge 2026</strong> rewards efficiency, endurance, and technical
+          innovation. This project asks: how much better can we make it, and does the structure hold up?
+        </p>
+        <div class="callout red">
+          <strong>Research objective:</strong> Quantify the aerodynamic benefit of increasing wing aspect ratio
+          on a fixed-area wing, then confirm the wing can still withstand 3.5 times the force of gravity —
+          the competition's structural safety requirement.
+        </div>
+        <div class="callout" style="margin-top:12px;">
+          <strong>What stayed the same:</strong> Wing area was kept constant at ≈ 1.0 m² across all designs.
+          This means comparisons are fair — any efficiency gain comes purely from the shape change, not from making a bigger wing.
+        </div>
+      </div>
+      <figure class="fig fig-tall">
+        <img src="Figures/AIwingCONCEPT.png" alt="High aspect ratio UAV wing concept" loading="lazy">
+        <figcaption>The high aspect ratio wing concept — longer and slimmer than the baseline, designed for maximum glide efficiency.</figcaption>
+      </figure>
+    </div>
+
+    <h3 style="color:var(--navy);font-weight:700;font-size:1rem;margin-bottom:12px;">Table 1 — Starting Point: BrUAS 2022 Baseline Wing</h3>
+    <div class="tbl-wrap mb">
+      <table>
+        <tr><th>Parameter</th><th>Value</th><th>Parameter</th><th>Value</th></tr>
+        <tr><td>Aerofoil profile</td><td>NACA 4415</td><td>Chord length <em>c</em></td><td>399.9 mm</td></tr>
+        <tr><td>Full wingspan <em>b</em></td><td>2520 mm</td><td>Wing area <em>S</em></td><td>≈ 1.0 m²</td></tr>
+        <tr><td>Aspect ratio AR</td><td>6.3</td><td>Cruise speed</td><td>31.5 m/s (≈ 113 km/h)</td></tr>
+        <tr><td>Structural load limit</td><td>3.5 G</td><td>Reynolds number Re</td><td>8.6 × 10⁵</td></tr>
+      </table>
+    </div>
+
+    <div class="banner">
+      <div class="banner-num">+27.51%</div>
+      <div class="banner-text">
+        <h3>Three design improvements, each building on the last</h3>
+        <p>Step 1: Wider wingspan (aspect ratio 6.3 → 10) &nbsp;+19.99% &nbsp;|&nbsp; Step 2: Better aerofoil profile &nbsp;+2.38% &nbsp;|&nbsp; Step 3: Winglets at the tips &nbsp;+4.05%</p>
+        <p style="margin-top:6px;color:#adc8e0;">Final wing: span 3180 mm · chord 317 mm · L/D ratio 21.66 (vs 16.99 baseline)</p>
+      </div>
+    </div>
+
+    <h3 style="color:var(--navy);font-weight:700;font-size:1rem;margin:32px 0 10px;">The Final Wing — AR 10 with Optimised Aerofoil &amp; Winglets</h3>
+    <div class="fig-row" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+      <figure class="fig fig-wide">
+        <img src="Figures/fluidflow_3D.png" alt="Final AR=10 wing — 3D CFD model" loading="lazy">
+        <figcaption>The final optimised wing (AR = 10, span 3180 mm) in the 3D CFD domain. The complete geometry — including the modular winglet at the tip — was simulated in ANSYS Fluent.</figcaption>
+      </figure>
+      <figure class="fig fig-wide">
+        <img src="Figures/2Pressure3Dcontour.png" alt="Final wing — pressure distribution at cruise" loading="lazy">
+        <figcaption>Pressure distribution on the upper surface at cruise conditions (α = 1°, V = 31.5 m/s). The suction peak at the leading edge tapering toward the tip is the signature of efficient, attached flow across the span.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ THEORY ══════════ -->
+<section id="theory">
+  <div class="wrap">
+    <div class="sec-label">Theoretical Background</div>
+    <h2 class="sec-title">The Physics Behind the Design</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">The core idea — no maths required</div>
+      <p>When a wing generates lift, it also creates a penalty: <strong>induced drag</strong> — a swirling, energy-wasting vortex shed from each wingtip. The longer the wing relative to its width (higher aspect ratio), the weaker these vortices are, and the less energy is wasted. This is why gliders have very long, narrow wings. There is, however, a structural cost: a longer wing bends more under load, like a longer ruler flexing when you press on its end. The design challenge is finding the aspect ratio that maximises aerodynamic gain without the structure becoming dangerously heavy or fragile.</p>
+    </div>
+
+    <div class="g2 mb">
+      <figure class="fig fig-wide">
+        <img src="Figures/Matlab/AR_LD_Mroot_with_percent.png" alt="AR trade-off: L/D gain and root bending moment vs aspect ratio" loading="lazy">
+        <figcaption>Figure 3.1 — The trade-off chart. The blue curve (left axis) shows how much more efficient the wing becomes as aspect ratio increases. The red curve (right axis) shows the growing structural load at the wing root. AR = 10 sits at the "sweet spot" — the aerodynamic gains are still strong while the structural penalty remains manageable.</figcaption>
+      </figure>
+      <div>
+        <p class="sec-intro">
+          The chart shows why AR = 10 was chosen. Below AR ≈ 8, each unit of aspect ratio brings large efficiency gains — well worth the structural cost. Above AR ≈ 12, the aerodynamic curve flattens out but structural loads keep growing. AR = 10 captures <strong>+19.99% L/D improvement</strong> while keeping the root bending moment increase to a manageable <strong>+26%</strong>.
+        </p>
+        <div class="callout red" style="margin-bottom:14px;">
+          <strong>Why not AR = 15 or 20?</strong> Diminishing returns. Going from AR 10 to AR 20 would add structural complexity for a relatively small additional aerodynamic gain — and transport becomes impractical for a competition drone.
+        </div>
+        <div class="callout">
+          <strong>Induced drag in one sentence:</strong> It scales with 1/AR — so doubling the aspect ratio halves the induced drag. Going from AR 6.3 to 10 cuts the induced drag term by approximately 37%.
+        </div>
+      </div>
+    </div>
+
+    <!-- DEEP DIVE ACCORDION -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">T</span> Technical Detail — Governing Equations &amp; Literature</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">For engineers</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <div class="g2">
+          <div class="card">
+            <h3>Aspect Ratio &amp; Induced Drag &nbsp;<span class="tag t-nv" style="font-size:0.68rem;">Eq. 2.1 &amp; 2.5</span></h3>
+            <div class="eq">AR = b² / S = b / c<span class="eq-ref">Eq. 2.1 [Anderson, 2017]</span>
+
+C_D = C_d + C_L² / (π · e · AR)<span class="eq-ref">Eq. 2.5 — induced term ∝ 1/AR</span></div>
+            <ul class="bl">
+              <li>Induced drag term C_Di = C_L² / (π·e·AR) — the fundamental driver for this project.</li>
+              <li>Wing area held constant (S ≈ 1.0 m²): ensures fair comparison across AR values.</li>
+              <li>AR 6.3 → 10 reduces the induced drag coefficient term by <strong>~37%</strong>.</li>
+              <li>Oswald efficiency factor e = 0.85 assumed, typical for a well-designed finite wing.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>L/D Maximisation &amp; Structural Penalty &nbsp;<span class="tag t-rd" style="font-size:0.68rem;">Eq. 3.3–3.6</span></h3>
+            <div class="eq">L/D = C_L / (C_D0 + k · C_L²)  where  k = 1/(π·e·AR)<span class="eq-ref">Eq. 3.3</span>
+
+M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.4–3.6 [Megson]</span></div>
+            <ul class="bl">
+              <li>Higher AR reduces <em>k</em>, raising the achievable maximum L/D.</li>
+              <li>Root bending moment scales with <strong>√AR</strong> — the structural cost of higher AR.</li>
+              <li>BrUAS 2022 failure moment ≈ 433 Nm (3.5G, 10 kg aircraft).</li>
+              <li>Trade-off drives the AR = 10 selection: aerodynamic gain vs. structural penalty.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="g3 mt">
+          <div class="card">
+            <h3>Aerodynamics Literature</h3>
+            <div class="tags"><span class="tag t-nv">[1][2] Anderson</span><span class="tag t-gn">[7] Ma &amp; Elham 2023</span></div>
+            <ul class="bl">
+              <li><strong>Anderson [1]:</strong> AR definition, induced drag fundamentals (Eqs. 2.1, 2.5).</li>
+              <li><strong>Anderson [2]:</strong> Drag polar, L/D maximisation, Oswald efficiency.</li>
+              <li><strong>Ma &amp; Elham [7]:</strong> Validates SST k-ω CFD for high-AR wings at similar Re.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Structural &amp; Optimisation</h3>
+            <div class="tags"><span class="tag t-or">[8] Megson</span><span class="tag t-pu">[9] Jameson 1988</span></div>
+            <ul class="bl">
+              <li><strong>Megson [8]:</strong> Root bending moment scaling with √AR, beam theory for rib load analysis.</li>
+              <li><strong>Jameson [9]:</strong> Adjoint-based aerodynamic optimisation — foundational method paper.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Winglet Literature</h3>
+            <div class="tags"><span class="tag t-rd">[6] Whitcomb 1976</span><span class="tag t-gn">[11] Kroo 2005</span></div>
+            <ul class="bl">
+              <li><strong>Whitcomb [6]:</strong> NASA TN D-8260 — original winglet research; provides geometric AR<sub>eff</sub> formula.</li>
+              <li><strong>Kroo [11]:</strong> Winglet efficiency gain and theoretical AR<sub>eff</sub> bounds.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ CFD METHODOLOGY ══════════ -->
+<section id="cfd">
+  <div class="wrap">
+    <div class="sec-label">Methodology</div>
+    <h2 class="sec-title">Virtual Wind Tunnel — How the Simulations Work</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">What is CFD?</div>
+      <p>CFD (Computational Fluid Dynamics) is a virtual wind tunnel. Instead of building a physical model and testing it, we divide the air around the wing into millions of tiny cells and solve the equations of fluid motion on each one — using a computer to predict exactly how air flows, where drag comes from, and how much lift is generated. This approach lets us test many design variations quickly and cheaply, before committing to a physical prototype.</p>
+    </div>
+
+    <p class="sec-plain">All simulations were performed in ANSYS Fluent. Both 2D cross-section (aerofoil profile) and full 3D wing simulations were run. Results were validated against published aerofoil data and checked for mesh independence before being used to inform design decisions.</p>
+
+    <!-- SOLVER TABLE -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">0</span> Simulation Settings &amp; Boundary Conditions</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Technical</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <div class="g2">
+          <div class="card">
+            <h3>Table 2 — Fluid Flow Conditions</h3>
+            <table>
+              <tr><th>Parameter</th><th>Setting</th></tr>
+              <tr><td>Solver</td><td>ANSYS Fluent · RANS · Pressure-based implicit</td></tr>
+              <tr><td>Turbulence model</td><td>SST k-ω · y⁺ ≈ 1 · no wall functions</td></tr>
+              <tr><td>Speed · Re · AoA</td><td>31.5 m/s · 8.6 × 10⁵ · 1°</td></tr>
+              <tr><td>Air density · Temperature</td><td>1.225 kg/m³ · 288 K · 101,325 Pa</td></tr>
+              <tr><td>Convergence criterion</td><td>&lt;1% change in C<sub>L</sub> and C<sub>D</sub></td></tr>
+            </table>
+          </div>
+          <div class="card">
+            <h3>Table 3 — Boundary Conditions</h3>
+            <table>
+              <tr><th>Boundary</th><th>Condition</th></tr>
+              <tr><td>Inlet</td><td>V<sub>∞</sub> = 31.5 m/s · AoA = variable</td></tr>
+              <tr><td>Wing surface</td><td>No-slip wall (air velocity = 0 at surface)</td></tr>
+              <tr><td>Far-field</td><td>Slip wall · zero shear stress</td></tr>
+              <tr><td>Outlet</td><td>Pressure outlet · ∂p/∂x = 0</td></tr>
+              <tr><td>Symmetry plane</td><td>Symmetry BC (3D half-wing model only)</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:16px;">
+          <strong>Why SST k-ω turbulence model?</strong> It blends two established turbulence models: k-ω in the near-wall region (accurate for boundary layer separation and adverse pressure gradients) and k-ε in the freestream. This combination is well-suited for a cambered aerofoil operating near stall. The <strong>y⁺ ≈ 1</strong> criterion ensures the first mesh cell sits inside the viscous sublayer — providing fully resolved boundary layers without relying on empirical wall functions.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2D DOMAIN & MESH -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">1</span> 2D Domain &amp; Mesh — Aerofoil Simulations</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Figures</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b open">
+        <p style="font-size:0.92rem;color:var(--muted);margin-bottom:16px;">A C-shaped simulation domain surrounds the aerofoil cross-section. The mesh is finest at the wing surface (to capture the thin boundary layer) and coarser in the freestream where less detail is needed. This structured quadrilateral mesh was used for all 2D aerofoil work — including shape optimisation.</p>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/Fluid_flow_2D.png" alt="2D computational fluid domain" loading="lazy">
+            <figcaption>Figure 3.6 — 2D C-type fluid domain. Far-field boundaries are set at least 20 chord lengths from the aerofoil to avoid influencing the near-field solution.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/2D_mesh.png" alt="2D structured quadrilateral mesh overview" loading="lazy">
+            <figcaption>Figure 3.7(a) — 2D structured mesh overview. Quadrilateral cells with progressive bias-scaling toward the aerofoil surface.</figcaption>
+          </figure>
+        </div>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/mesh_2d_leading.png" alt="2D mesh — leading edge refinement" loading="lazy">
+            <figcaption>Figure 3.7(b) — Leading edge mesh detail. High cell density resolves the strong pressure gradient and suction peak where most of the lift is generated.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/mesh_2d_trailing.png" alt="2D mesh — trailing edge refinement" loading="lazy">
+            <figcaption>Figure 3.7(c) — Trailing edge mesh detail. Fine resolution captures wake formation and the adverse pressure gradient region, where separation can occur.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D DOMAIN & MESH -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">2</span> 3D Domain &amp; Mesh — Full Wing Simulations</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Figures</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b open">
+        <p style="font-size:0.92rem;color:var(--muted);margin-bottom:16px;">Only half the wing was simulated — a symmetry boundary condition at the root mirrors the result to reconstruct the full wing. This halves the computational cost with no loss of accuracy. The mesh is unstructured (tetrahedral cells) in the freestream, with structured inflation layers at the wing surface to maintain y⁺ ≈ 1.</p>
+        <div class="fig-row">
+          <figure class="fig fig-tall">
+            <img src="Figures/fluidflow_3D.png" alt="3D fluid domain with flow zones and refinement regions" loading="lazy">
+            <figcaption>Figure 3.5 — 3D fluid domain. The symmetry plane at the wing root (right side) mirrors the half-wing simulation into a full-wing result. Far-field boundaries set at ≥ 10 chord lengths minimum.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/mesh1.png" alt="3D mesh — full wing view" loading="lazy">
+            <figcaption>Figure 3.9(a) — 3D mesh: full half-wing view. Surface refinement visible at leading and trailing edges and wingtip region.</figcaption>
+          </figure>
+        </div>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/mesh2.png" alt="3D mesh — surface detail" loading="lazy">
+            <figcaption>Figure 3.9(b) — 3D surface mesh detail. Bias-scaled inflation layers at the leading edge maintain y⁺ ≈ 1 across the full span.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/mesh3.png" alt="3D mesh — section view" loading="lazy">
+            <figcaption>Figure 3.9(c) — Cross-section showing structured inflation layers at the wing surface transitioning to unstructured cells in the freestream.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESH INDEPENDENCE -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">3</span> Mesh Independence — Verifying the Results Are Trustworthy</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Validation</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <p style="font-size:0.92rem;color:var(--muted);margin-bottom:6px;">A key question in any CFD study: do the results depend on how fine the mesh is, or have we reached a level of detail where adding more cells makes no meaningful difference? This is called <strong>mesh independence</strong>.</p>
+        <p style="font-size:0.92rem;color:var(--muted);margin-bottom:16px;">Multiple mesh densities were tested. The final meshes were selected where the lift and drag coefficients changed by less than 1% with further refinement — confirming the results are reliable and not artificially influenced by mesh resolution.</p>
+        <figure class="fig fig-wide">
+          <img src="Figures/Matlab/mesh_independence_combined.png" alt="Mesh independence study — 2D and 3D combined" loading="lazy">
+          <figcaption>Mesh independence study — 2D (left) and 3D (right). C<sub>L</sub> and C<sub>D</sub> plotted against mesh element count. The plateau of each curve confirms that the selected mesh density produces mesh-independent results.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- CONVERGENCE -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">4</span> Solver Convergence — Confirming a Stable Solution</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Validation</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <p style="font-size:0.92rem;color:var(--muted);margin-bottom:6px;">Convergence means the simulation has reached a stable, self-consistent solution — the numbers are no longer changing between iterations. Convergence was assessed on <strong>aerodynamic force coefficients</strong> (lift and drag), not just solver residuals, as this is a more physically meaningful criterion.</p>
+        <p style="font-size:0.92rem;color:var(--muted);margin-bottom:16px;">Criterion: less than 1% variation in C<sub>L</sub> and C<sub>D</sub> over the final 200 iterations.</p>
+        <figure class="fig fig-wide">
+          <img src="Figures/Matlab/residuals_plot_3D.png" alt="3D solver residuals convergence" loading="lazy">
+          <figcaption>3D solver residuals — all governing equations converge to below 10⁻⁴. Force coefficient convergence confirmed separately as the primary criterion (&lt;1% change in C<sub>L</sub> and C<sub>D</sub>).</figcaption>
+        </figure>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ AEROFOIL OPTIMISATION ══════════ -->
+<section id="aerofoil">
+  <div class="wrap">
+    <div class="sec-label">Aerofoil Optimisation</div>
+    <h2 class="sec-title">Reshaping the Wing Profile for Less Drag</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">The concept, simply</div>
+      <p>The <strong>aerofoil</strong> is the cross-sectional shape of the wing — like a slice through it. Even small changes to this shape can meaningfully reduce drag. Instead of manually guessing which shape is best, we used an automated mathematical method that analyses the sensitivity of drag to every point on the surface simultaneously, then adjusts the shape iteratively until drag is minimised. The starting profile was the standard NACA 4415, widely used on competition drones.</p>
+    </div>
+
+    <div class="g2 mb">
+      <div>
+        <p class="sec-intro">
+          The final optimised profile looks very similar to the original NACA 4415 to the naked eye — the change is subtle. But the improvement is real: <strong>+2.38% L/D</strong> from this step alone, on top of the aspect ratio gain.
+        </p>
+        <ul class="bl" style="margin-bottom:16px;">
+          <li>Starting profile: NACA 4415 (4% max camber, 15% thickness).</li>
+          <li>Objective: minimise aerodynamic drag while maintaining lift.</li>
+          <li>The largest shape change is near the <strong>lower trailing edge</strong> — a subtle camber adjustment that reduces the adverse pressure gradient, delaying flow separation.</li>
+          <li>Optimisation done in 2D; the resulting profile was directly applied to the 3D wing.</li>
+          <li>L/D contribution: <strong>+2.38%</strong> (Model 2 → 4: L/D 20.39 → 20.79).</li>
+        </ul>
+        <div class="callout red">
+          <strong>Limitation acknowledged:</strong> The optimisation was 2D only. A full 3D adjoint optimisation would capture spanwise effects and tip losses — estimated gain would be 2–3× higher. This is identified as the highest-priority future work.
+        </div>
+      </div>
+      <div class="card">
+        <h3>2D Validation — Does the Simulation Match Reality?</h3>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:12px;">Before trusting the optimisation results, the 2D simulation setup was validated against published experimental NACA 4415 data. The close agreement confirms the solver settings are correct.</p>
+        <figure class="fig">
+          <img src="Figures/NACA 4415 Cl vs AoA.png" alt="NACA 4415 Cl vs angle of attack — CFD validation" loading="lazy">
+          <figcaption>C<sub>L</sub> vs angle of attack for NACA 4415 at Re = 8.6×10⁵. CFD predictions compared against published aerofoil data — strong agreement validates the 2D simulation methodology.</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- DEEP DIVE -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">A</span> Technical Detail — Adjoint Method, Morphing Stages &amp; Cp Analysis</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">For engineers</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <div class="callout" style="margin-bottom:20px;">
+          <strong>Adjoint method (Jameson, 1988 [9]):</strong> A gradient-based optimisation technique that requires only two CFD solutions — a forward solve and an adjoint solve — to compute the sensitivity of the objective function (drag) to every surface point simultaneously, regardless of the number of design variables. This makes it computationally far more efficient than finite-difference sensitivity analysis for large numbers of design variables.
+        </div>
+        <h3 style="color:var(--navy);font-weight:700;margin-bottom:6px;">Morphing Stages — Progressive Shape Modification</h3>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">Sequential stages of the adjoint optimisation from NACA 4415 baseline through to the final optimised geometry. Shape changes are concentrated near the lower trailing edge.</p>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/2dmorphing0.png" alt="Aerofoil optimisation — stage 0, NACA 4415 baseline" loading="lazy">
+            <figcaption>Stage 0 — NACA 4415 baseline at AoI = 1°. Starting geometry for the adjoint optimisation.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/2dmorphing2.png" alt="Aerofoil optimisation — stage 2" loading="lazy">
+            <figcaption>Stage 2 — Intermediate stage. Lower surface beginning to modify; upper surface largely unchanged.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/2dmorphing4.png" alt="Aerofoil optimisation — stage 4, final" loading="lazy">
+            <figcaption>Stage 4 — Final optimised profile. Largest change concentrated at the lower trailing edge, reducing the adverse pressure gradient.</figcaption>
+          </figure>
+        </div>
+        <div class="fig-row mt">
+          <figure class="fig">
+            <img src="Figures/Matlab/Cp_distribution.png" alt="Pressure coefficient distribution — baseline vs optimised" loading="lazy">
+            <figcaption>C<sub>p</sub> distribution at α = 1°. The optimised profile (dashed) shows reduced suction magnitude on the lower surface near the trailing edge — consistent with the geometric modification and the drag reduction mechanism.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/AoA22optimised.png" alt="Optimised aerofoil at 22 degrees AoA" loading="lazy">
+            <figcaption>Figure 5.5 — Final optimised aerofoil at AoA = 22° (near stall). Improved trailing edge flow attachment compared to the NACA 4415 baseline at high incidence.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ WINGLET ══════════ -->
+<section id="winglet">
+  <div class="wrap">
+    <div class="sec-label">Winglet Design</div>
+    <h2 class="sec-title">Turning Wasted Vortex Energy into Efficiency</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">What do winglets actually do?</div>
+      <p>Look at the tips of any modern commercial aircraft and you will see the small upturned fins — <strong>winglets</strong>. At the end of each wing, pressure differences between the top and bottom surfaces cause air to spiral into a powerful vortex. This rotating column of air is a direct energy loss. Winglets disrupt the formation of these vortices, recovering some of that energy and making the wing behave aerodynamically as if it were physically longer. They were first studied by NASA's Richard Whitcomb in 1976 and are now standard on almost all commercial jets.</p>
+    </div>
+
+    <div class="g2 mb">
+      <div>
+        <p class="sec-intro">
+          The winglet was designed as a <strong>modular plug-in</strong> — it slots into the wingtip rib and can be removed for transport without any structural modification to the main wing. This directly addresses the practicality requirements of the IMechE UAS Challenge 2026 competition.
+        </p>
+        <ul class="bl" style="margin-bottom:16px;">
+          <li>L/D contribution from winglet: <strong>+4.05%</strong> (Model 4 → 5: 20.79 → 21.66).</li>
+          <li>Multiple cant angle and sweep configurations explored before finalising the design.</li>
+          <li>Modular interface: plug-in seats into the wingtip rib — removable without tools.</li>
+        </ul>
+        <div class="callout" style="margin-bottom:12px;">
+          <strong>Two ways to measure the effective AR increase from a winglet:</strong><br>
+          <strong>Geometric formula (Whitcomb):</strong> AR<sub>eff</sub> = 10.75<br>
+          <strong>CFD equivalence (drag-matched):</strong> AR<sub>eff</sub> = 10.34 ← used in this project<br>
+          The CFD value is more conservative and physically meaningful — it accounts for real 3D interference and juncture drag that the geometric formula cannot capture.
+        </div>
+      </div>
+      <figure class="fig">
+        <img src="Figures/wingtipvortex.png" alt="Wingtip vortex visualisation" loading="lazy">
+        <figcaption>Wingtip vortex visualisation — the rotating column of air shed from the tip is a direct energy penalty. Winglets weaken this vortex, effectively recovering wasted energy and increasing the aerodynamic span.</figcaption>
+      </figure>
+    </div>
+
+    <!-- CONCEPT EVOLUTION & CFD -->
+    <div class="acc">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">W</span> Design Evolution — Concepts, CFD &amp; Pressure Contours</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Figures</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <h3 style="color:var(--navy);font-weight:700;margin-bottom:6px;">Winglet Concept Iteration</h3>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">Design iteration exploring cant angle, sweep, and height-to-span ratio before arriving at the final modular configuration.</p>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/tipConcept1.png" alt="Winglet concept 1" loading="lazy">
+            <figcaption>Figure 3.3(a) — Concept 1: initial vertical winglet. Explores the baseline span-extension principle.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/tipConcept2.png" alt="Winglet concept 2" loading="lazy">
+            <figcaption>Figure 3.3(b) — Concept 2: canted winglet with sweep. Improved flow turning and reduced juncture drag vs. vertical configuration.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/tipConcept3.png" alt="Winglet concept 3 — final" loading="lazy">
+            <figcaption>Figure 3.3(c) — Final concept: optimised cant angle and sweep. Modular plug-in interface designed to seat into the wingtip rib.</figcaption>
+          </figure>
+        </div>
+        <div class="fig-row mt">
+          <figure class="fig">
+            <img src="Figures/wingletclose.png" alt="Final winglet — close-up seated in wingtip rib" loading="lazy">
+            <figcaption>Final modular winglet seated in the wingtip rib. Plug-in interface allows removal without structural modification to the main wing.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/wingtipvortex2.png" alt="Wingtip vortex — with winglet" loading="lazy">
+            <figcaption>Vortex structure with winglet installed. Reduction in vortex strength contributes to the AR<sub>eff</sub> increase: 10 → 10.34 (CFD equivalence method).</figcaption>
+          </figure>
+        </div>
+        <h3 style="color:var(--navy);font-weight:700;margin:24px 0 6px;">3D Pressure Contours</h3>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">Pressure contours confirm expected aerodynamic behaviour: strong suction peak at the leading edge, spanwise pressure gradient driving tip vortex formation, and the winglet's influence on the tip flow field.</p>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/2Pressure3Dcontour.png" alt="3D pressure contour — upper surface" loading="lazy">
+            <figcaption>3D pressure contour — upper surface at α = 1°. Clear suction peak (dark blue) at the leading edge with spanwise pressure gradient visible toward the tip.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/Pressure3Dcontour.png" alt="3D pressure distribution — side view" loading="lazy">
+            <figcaption>3D pressure distribution side view — pressure differential between upper (suction) and lower (pressure) surfaces is the source of lift.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ RESULTS ══════════ -->
+<section id="results">
+  <div class="wrap">
+    <div class="sec-label">Results</div>
+    <h2 class="sec-title">Performance Across All Five Wing Configurations</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">The headline result</div>
+      <p>Five wing designs were tested, each isolating one improvement. The baseline (BrUAS 2022) has a lift-to-drag ratio of 16.99 — meaning for every Newton of drag the wing produces, it generates 16.99 Newtons of lift. The final optimised wing achieves 21.66 — <strong>27.51% more efficient</strong>. In practical terms, this translates directly to longer flight time, greater range, and more payload for the same motor and battery.</p>
+    </div>
+
+    <!-- STEP FLOW -->
+    <div class="steps mb">
+      <div class="step">
+        <div class="step-n">Baseline (M1)</div>
+        <div class="step-name">BrUAS 2022</div>
+        <div class="step-val">16.99</div>
+        <div class="step-sub">L/D · AR = 6.3</div>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 1 (M2)</div>
+        <div class="step-name">Wider Wing</div>
+        <div class="step-val">+19.99%</div>
+        <div class="step-sub">AR 6.3 → 10<br>Dominant driver</div>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 2 (M4)</div>
+        <div class="step-name">Better Profile</div>
+        <div class="step-val">+2.38%</div>
+        <div class="step-sub">Adjoint aerofoil opt.<br>Lower TE change</div>
+      </div>
+      <div class="step">
+        <div class="step-n">Step 3 (M5)</div>
+        <div class="step-name">+ Winglets</div>
+        <div class="step-val">+4.05%</div>
+        <div class="step-sub">Modular plug-in<br>AR<sub>eff</sub> = 10.34</div>
+      </div>
+      <div class="step final">
+        <div class="step-n">Final (M5)</div>
+        <div class="step-name">Total Gain</div>
+        <div class="step-val">+27.51%</div>
+        <div class="step-sub">L/D = 21.66<br>b = 3180 mm · c = 317 mm</div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="fig-row mt">
+      <figure class="fig">
+        <img src="Figures/Matlab/LDcomparisonanalysis.png" alt="L/D comparison across all five models" loading="lazy">
+        <figcaption>Aerodynamic efficiency comparison across all five models — absolute L/D, efficiency per unit AR, and percentage improvement relative to the BrUAS 2022 baseline. Each step delivers a positive, non-diminishing contribution.</figcaption>
+      </figure>
+      <figure class="fig">
+        <img src="Figures/Matlab/weighted_efficiency.png" alt="Weighted aerodynamic efficiency" loading="lazy">
+        <figcaption>Weighted efficiency analysis — L/D improvement per unit AR increase. Confirms each design step contributes positive returns for the selected design sequence.</figcaption>
+      </figure>
+    </div>
+
+    <div class="fig-row mt">
+      <figure class="fig">
+        <img src="Figures/Matlab/Lift_vs_AoA_report_style.png" alt="Lift vs angle of attack — Model 1 vs Model 5" loading="lazy">
+        <figcaption>Lift vs angle of attack — Baseline (Model 1) vs Final configuration (Model 5) across α = 1°–16°. Model 5 generates higher lift at all angles; the increased wing span raises the lift curve slope.</figcaption>
+      </figure>
+      <figure class="fig">
+        <img src="Figures/Matlab/LD_vs_AoA.png" alt="L/D vs angle of attack" loading="lazy">
+        <figcaption>L/D vs angle of attack — Model 5 maintains superior efficiency across the full operating range. The peak L/D advantage is consistent with the AR-driven induced drag reduction predicted by theory.</figcaption>
+      </figure>
+    </div>
+
+    <!-- DETAILED TABLE ACCORDION -->
+    <div class="acc mt">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">R</span> Full Results Table — 3D CFD Data for All Five Models</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Data table</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:14px;">All simulations at V<sub>∞</sub> = 31.5 m/s, α = 1°, Re = 8.6 × 10⁵. Half-wing model with symmetry BC. Lift and drag values reflect the half-wing; full-wing values are double.</p>
+        <div class="tbl-wrap">
+          <table>
+            <tr><th>M</th><th>Configuration</th><th>AR</th><th>AR<sub>eff</sub></th><th>Drag (N)</th><th>Lift (N)</th><th>L/D</th><th>Δ (%)</th></tr>
+            <tr><td>1</td><td>BrUAS 2022 Baseline</td><td>6.3</td><td>—</td><td>6.8479</td><td>116.35</td><td>16.99</td><td>—</td></tr>
+            <tr><td>2</td><td>AR = 10 (wider wing)</td><td>10</td><td>—</td><td>6.6186</td><td>134.93</td><td>20.39</td><td>+19.99</td></tr>
+            <tr><td>3</td><td>AR = 10 + Winglet only</td><td>10</td><td>10.34</td><td>7.1048</td><td>149.73</td><td>21.07</td><td>+24.04</td></tr>
+            <tr><td>4</td><td>AR = 10 + Optimised Aerofoil</td><td>10</td><td>—</td><td>6.5241</td><td>135.64</td><td>20.79</td><td>+22.37</td></tr>
+            <tr class="hl"><td>5</td><td>AR = 10 + Opt. Aerofoil + Winglet</td><td>10</td><td>10.34</td><td>6.9812</td><td>151.24</td><td>21.66</td><td>+27.51</td></tr>
+          </table>
+        </div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-top:8px;">Model 5 highlighted as the final configuration. Lift increase M1→M5: 116.35 → 151.24 N (+30.0%) on the same wing area at identical flight conditions.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ STRUCTURAL ══════════ -->
+<section id="structure">
+  <div class="wrap">
+    <div class="sec-label">Structural Analysis</div>
+    <h2 class="sec-title">Does the Longer Wing Hold Together?</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">The structural challenge</div>
+      <p>A longer wing bends more under load — just like a longer ruler deflects more when you press on its end. Increasing the aspect ratio from 6.3 to 10 makes the wing 26% more stressed at the root (where it joins the fuselage). The question is: does the existing wing structure handle this increase, or do we need to redesign it? The answer turned out to be a targeted upgrade at just two critical positions, rather than a full structural redesign.</p>
+    </div>
+
+    <div class="g2 mb">
+      <div>
+        <p class="sec-intro">The wing must withstand <strong>3.5 G competition loads</strong> — 3.5 times the force of gravity. To size the structure conservatively, the most demanding load case was assumed: an <strong>elliptic lift distribution</strong>, which is both the aerodynamically optimal spanwise load and the one that produces the highest root bending moment.</p>
+        <ul class="bl" style="margin-bottom:16px;">
+          <li>Root shear force V(0) = <strong>67.5 N</strong> — the maximum shear at Rib 1.</li>
+          <li>Root bending moment: +26% increase over BrUAS 2022 due to AR increase (√AR scaling).</li>
+          <li>BrUAS 2022 structural failure moment ≈ 433 Nm — provides the design limit reference.</li>
+          <li>Only Ribs 1 and 13 needed upgrading to plywood. All 15 remaining ribs stay as balsa.</li>
+        </ul>
+        <div class="inline-stat">17 ribs total over b/2 = 1590 mm</div>
+        <div class="inline-stat">V(0) = 67.5 N root shear</div>
+        <div class="inline-stat">+26% bending moment</div>
+        <div class="inline-stat">433 Nm failure limit</div>
+        <div class="inline-stat">2 ribs upgraded to plywood</div>
+        <div class="inline-stat">3.5 G design load</div>
+      </div>
+      <div class="card">
+        <h3>Rib Spacing Layout — Half Span (b/2 = 1590 mm)</h3>
+        <table>
+          <tr><th>Zone</th><th>Spacing</th><th>Region</th><th>Material</th></tr>
+          <tr><td>Zone I</td><td>80 mm</td><td>Root (highest load)</td><td>Balsa</td></tr>
+          <tr><td>Zone II</td><td>100 mm</td><td>Mid-span</td><td>Balsa</td></tr>
+          <tr><td>Zone III</td><td>118 mm</td><td>Tip region</td><td>Balsa</td></tr>
+          <tr class="hl"><td colspan="2">Ribs 1 &amp; 13</td><td>Critical positions</td><td><strong>Plywood ↑</strong></td></tr>
+        </table>
+        <div class="callout red" style="margin-top:10px;font-size:0.85rem;">
+          <strong>Rib 1</strong> — maximum shear load at root (V(0) = 67.5 N). &nbsp;
+          <strong>Rib 13</strong> — zone transition point between Zone II and III; local stress concentration from the spacing change.
+        </div>
+      </div>
+    </div>
+
+    <div class="fig-row">
+      <figure class="fig">
+        <img src="Figures/Rib schematic.png" alt="Rib distribution schematic" loading="lazy">
+        <figcaption>Figure 4.1 — Rib distribution across the half-span (b/2 = 1590 mm). Three spacing zones with plywood reinforcement at critical Ribs 1 and 13. All other 15 ribs remain as balsa.</figcaption>
+      </figure>
+      <figure class="fig">
+        <img src="Figures/interiorWING2.png" alt="Wing interior structural layout" loading="lazy">
+        <figcaption>Wing interior structural arrangement — rib and spar configuration for the AR = 10 design. Zone spacing visible along the span.</figcaption>
+      </figure>
+    </div>
+
+    <div class="acc mt">
+      <div class="acc-h" onclick="tog(this)">
+        <span style="display:flex;align-items:center;gap:10px;"><span class="num-pill">S</span> Technical Detail — Load Distribution Equations &amp; Interior Views</span>
+        <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">For engineers</span><span class="ico">▾</span></span>
+      </div>
+      <div class="acc-b">
+        <div class="card" style="margin-bottom:16px;">
+          <h3>Elliptic Load Distribution &nbsp;<span class="tag t-nv" style="font-size:0.68rem;">Eqs. 4.1 &amp; 4.2</span></h3>
+          <div class="eq">q(y) = q₀ × √(1 − (2y/b)²) &nbsp;[Eq. 4.2 — elliptic spanwise load]
+V(y) = ∫ q(η) dη &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Eq. 4.1 — shear force integral]
+V(0) = 67.5 N &nbsp;&nbsp;(maximum shear force at the root)</div>
+          <ul class="bl">
+            <li>Elliptic distribution is aerodynamically optimal and produces the maximum root bending moment — conservative for structural sizing.</li>
+            <li>q₀ is the peak load per unit span at the root; the distribution tapers to zero at the tip.</li>
+            <li>Root shear V(0) = 67.5 N governs the sizing of Rib 1 and the spar cross-section.</li>
+            <li>Root bending moment: √(10/6.3) ≈ 1.26 × BrUAS 2022 value (+26%). Handled by targeted plywood upgrades only.</li>
+          </ul>
+        </div>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/interiorWing1.png" alt="Wing interior — spar and rib detail" loading="lazy">
+            <figcaption>Interior detail — spar running spanwise through the rib assembly. Plywood ribs at positions 1 and 13 are structurally distinguishable from the surrounding balsa ribs.</figcaption>
+          </figure>
+          <div class="callout" style="display:flex;flex-direction:column;justify-content:center;font-size:0.88rem;">
+            <strong>Why beam theory?</strong><br><br>
+            Analytical beam theory (Megson [8]) was used rather than finite element analysis (FEA). Beam theory is conservative, well-validated for slender wing structures, and appropriate for a preliminary design study. Full FEA is identified as a priority before physical manufacture — this is a known limitation of the current analysis.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ CONCLUSIONS ══════════ -->
+<section id="conclusions">
+  <div class="wrap">
+    <div class="sec-label">Conclusions &amp; Future Work</div>
+    <h2 class="sec-title">What Was Found, What Comes Next</h2>
+    <div class="divider"></div>
+
+    <div class="plain-box">
+      <div class="plain-label">Summary for everyone</div>
+      <p>This project proved that a longer wing makes a meaningfully better drone — specifically, <strong>27.51% more aerodynamically efficient</strong> than the current Brunel competition wing. The improvement came from three additive design changes: making the wing longer (the biggest single gain), computationally optimising the wing cross-section profile, and adding modular winglets at the tips. The structural analysis confirmed the wing can handle competition loads with targeted reinforcement at just two rib positions — no major redesign required.</p>
+    </div>
+
+    <div class="g2 mb">
+      <div class="card">
+        <h3>Key Findings</h3>
+        <ul class="bl">
+          <li>Increasing AR from 6.3 to 10 on a constant-area wing delivers <strong>+19.99% L/D</strong> — the dominant performance driver. New geometry: b = 3180 mm, c = 317 mm.</li>
+          <li>Adjoint-based aerofoil optimisation adds <strong>+2.38%</strong>, with the primary shape change at the lower trailing edge reducing the adverse pressure gradient.</li>
+          <li>A modular plug-in winglet contributes <strong>+4.05%</strong>. AR<sub>eff</sub> = 10.34 (CFD equivalence) preferred over the geometric estimate of 10.75.</li>
+          <li>Combined total improvement: <strong>+27.51%</strong> — L/D rises from 16.99 to 21.66.</li>
+          <li>Structural viability confirmed: only Ribs 1 and 13 need plywood; all 15 remaining ribs stay as balsa. The +26% root bending moment increase is accommodated by targeted material changes only.</li>
+          <li>Modular winglet design satisfies competition transport and assembly constraints (IMechE UAS Challenge 2026 [5]).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Limitations &amp; Future Work</h3>
+        <ul class="bl">
+          <li><strong>2D aerofoil optimisation only:</strong> Full 3D adjoint optimisation would capture spanwise effects — estimated gain 2–3× higher. This is the highest-priority future work.</li>
+          <li><strong>No experimental validation:</strong> Wind tunnel testing is needed to confirm CFD predictions. Ma &amp; Elham [7] validates the method, not the specific geometry.</li>
+          <li><strong>Single operating condition:</strong> All CFD at α = 1°, V = 31.5 m/s. Off-design performance (range of angles, gusts, climb) not fully characterised.</li>
+          <li><strong>Analytical structural analysis only:</strong> Full finite element analysis (FEA) is recommended before manufacture.</li>
+          <li><strong>Physical prototype and flight test:</strong> Required to close the validation loop for IMechE competition entry.</li>
+          <li><strong>Combined optimisation:</strong> Simultaneous 3D aerofoil + winglet optimisation may reveal synergistic gains not captured by the sequential approach.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ REFERENCES ══════════ -->
+<section id="references" style="padding-bottom:56px;">
+  <div class="wrap">
+    <div class="sec-label">References</div>
+    <h2 class="sec-title">Academic Sources</h2>
+    <div class="divider"></div>
+    <ul class="refs">
+      <li><span class="ref-n">[1]</span>J. D. Anderson, <em>Introduction to Flight</em>, 8th ed. McGraw-Hill Education, 2016.</li>
+      <li><span class="ref-n">[2]</span>J. D. Anderson, <em>Fundamentals of Aerodynamics</em>, 6th ed. McGraw-Hill Education, 2017.</li>
+      <li><span class="ref-n">[5]</span>IMechE, <em>UAS Challenge 2026 Rules and Scoring Guidance</em>. Institution of Mechanical Engineers, 2026.</li>
+      <li><span class="ref-n">[6]</span>R. T. Whitcomb, "A design approach and selected wind-tunnel results at high subsonic speeds for wing-tip mounted winglets," <em>NASA Technical Note TN D-8260</em>, NASA Langley Research Center, 1976.</li>
+      <li><span class="ref-n">[7]</span>X. Ma and M. Elham, "Aerodynamic optimisation of high aspect ratio wings," <em>Aerospace Science and Technology</em>, 2023.</li>
+      <li><span class="ref-n">[8]</span>T. H. G. Megson, <em>Aircraft Structures for Engineering Students</em>, 6th ed. Butterworth-Heinemann, 2016.</li>
+      <li><span class="ref-n">[9]</span>A. Jameson, "Aerodynamic design via control theory," <em>Journal of Scientific Computing</em>, vol. 3, no. 3, pp. 233–260, 1988.</li>
+      <li><span class="ref-n">[11]</span>I. Kroo, "Drag due to lift: Concepts for prediction and reduction," VKI Lecture Series, von Karman Institute for Fluid Dynamics, 2005.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="foot-inner">
+    <h3>Acknowledgements</h3>
+    <p>
+      Sincere thanks to <strong style="color:#e2e8f0;">Dr O. Adetoro</strong> for his supervision, guidance and support throughout this project,
+      and to <strong style="color:#e2e8f0;">Dr G. Alfano</strong> (Module Tutor) and the Department of Mechanical and Aerospace Engineering
+      at Brunel University London for providing the facilities and environment to carry out this work.
+    </p>
+    <div class="foot-red-line"></div>
+    <h3>Academic Disclaimer</h3>
+    <p>
+      This page presents the findings of an individual academic project submitted to Brunel University London.
+      All simulations, analysis and conclusions are the author's own independent work.
+      This is a personal project showcase page and does not represent the views or positions of Brunel University London.
+      Third-party sources are cited in accordance with IEEE referencing standards.
+      AI tools were used solely for formatting and grammar assistance;
+      all technical analysis was independently conducted by the author.
+    </p>
+    <hr class="foot-div">
+    <h3>A Note on AI Use</h3>
+    <p>
+      Claude (Anthropic) was used to assist with the layout, formatting, and presentation of this web page.
+      All engineering analysis, CFD simulations, structural calculations, and technical conclusions
+      are the author's own independent work and were completed without AI assistance.
+    </p>
+    <hr class="foot-div">
+    <p class="foot-copy">© 2026 Nicolas Gali &nbsp;·&nbsp; Brunel University London &nbsp;·&nbsp; Department of Mechanical and Aerospace Engineering</p>
+  </div>
+</footer>
+
+<script>
+  function tog(h){
+    const b=h.nextElementSibling, i=h.querySelector('.ico');
+    const open=b.classList.contains('open');
+    b.classList.toggle('open',!open);
+    i.classList.toggle('open',!open);
+  }
+  document.querySelectorAll('.acc-b.open').forEach(b=>{
+    b.previousElementSibling.querySelector('.ico').classList.add('open');
+  });
+</script>
+</body>
+</html>
