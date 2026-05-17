@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>High Aspect Ratio UAV | Nicolas Gali — Brunel University London</title>
+<title>High Aspect Ratio UAV | Nicolas Gali — Brunel University of London</title>
 <meta name="description" content="Aerodynamic and structural optimisation of a high aspect ratio UAV wing achieving +27.51% L/D improvement over the BrUAS 2022 baseline through AR selection, adjoint aerofoil optimisation, and winglet design.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,8 +60,8 @@ nav{
 }
 .hero::before{
   content:'';position:absolute;inset:0;
-  background:url('Figures/fluidflow_3D.png') center/cover no-repeat;
-  opacity:0.10;pointer-events:none;
+  background:url('Figures/interiorWING2.png') center/cover no-repeat;
+  opacity:0.18;pointer-events:none;
 }
 .hero::after{
   content:'';position:absolute;bottom:0;left:0;right:0;height:4px;
@@ -320,7 +320,7 @@ footer p{font-size:0.82rem;line-height:1.75;margin-bottom:8px}
 <!-- ══════════ HERO ══════════ -->
 <div class="hero">
   <div class="hero-inner">
-    <div class="hero-pill">3rd Year Dissertation &nbsp;·&nbsp; Brunel University London</div>
+    <div class="hero-pill">3rd Year Dissertation &nbsp;·&nbsp; Brunel University of London</div>
     <h1>High Aspect Ratio UAV Wing for<br><em>Improved Aerodynamic Efficiency</em></h1>
     <p class="hero-desc">
       Longer, thinner wings waste less energy fighting air resistance. This project shows exactly how much —
@@ -337,7 +337,7 @@ footer p{font-size:0.82rem;line-height:1.75;margin-bottom:8px}
     <div class="hero-byline">
       <span>Nicolas Gali</span>
       <span>·</span>
-      <span>Brunel University London</span>
+      <span>Brunel University of London</span>
       <span>·</span>
       <span>Supervisor: Dr O. Adetoro</span>
       <span>·</span>
@@ -377,8 +377,8 @@ footer p{font-size:0.82rem;line-height:1.75;margin-bottom:8px}
         </div>
       </div>
       <figure class="fig">
-        <img src="Figures/Matlab/AR1.png" alt="Aspect ratio diagram — wingspan to chord relationship" loading="lazy">
-        <figcaption>Aspect ratio (AR = b²/S = b/c) illustrated schematically. Higher AR wings have lower induced drag — the fundamental aerodynamic motivation for this project. [Anderson, 2017]</figcaption>
+        <img src="Figures/simple%20AR.png" alt="Aspect ratio comparison — short wing vs long wing aircraft" loading="lazy">
+        <figcaption>Aspect ratio (AR = b²/S = b/c) illustrated: a short, wide wing (low AR) versus a long, narrow wing (high AR). Higher AR wings generate lower induced drag for the same lift — the fundamental aerodynamic motivation for this project. [Leishman, 2026]</figcaption>
       </figure>
     </div>
 
@@ -486,7 +486,7 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
             <ul class="bl">
               <li><strong>Anderson [1]:</strong> AR definition, induced drag fundamentals (Eqs. 2.1, 2.5).</li>
               <li><strong>Anderson [2]:</strong> Drag polar, L/D maximisation, Oswald efficiency.</li>
-              <li><strong>Ma &amp; Elham [7]:</strong> Validates SST k-ω CFD for high-AR wings at similar Re.</li>
+              <li><strong>Ma &amp; Elham [7]:</strong> Validates L/D improvement range of 15–25% for AR increases from 6 to 10–12; provides the L/D maximisation derivation.</li>
             </ul>
           </div>
           <div class="card">
@@ -698,7 +698,7 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
         <h3>2D Validation — Does the Simulation Match Reality?</h3>
         <p style="font-size:0.88rem;color:var(--muted);margin-bottom:12px;">Before trusting the optimisation results, the 2D simulation setup was validated against published experimental NACA 4415 data. The close agreement confirms the solver settings are correct.</p>
         <figure class="fig">
-          <img src="Figures/NACA 4415 Cl vs AoA.png" alt="NACA 4415 Cl vs angle of attack — CFD validation" loading="lazy">
+          <img src="Figures/NACA%204415%20Cl%20vs%20AoA.png" alt="NACA 4415 Cl vs angle of attack — CFD validation" loading="lazy">
           <figcaption>C<sub>L</sub> vs angle of attack for NACA 4415 across the Reynolds number range tested. CFD predictions compared against published aerofoil data — strong agreement validates the 2D simulation methodology.</figcaption>
         </figure>
       </div>
@@ -945,7 +945,7 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
           <tr><th>Zone</th><th>Spacing</th><th>Region</th><th>Material</th></tr>
           <tr><td>Zone I</td><td>80 mm</td><td>Root (highest load)</td><td>Balsa</td></tr>
           <tr><td>Zone II</td><td>100 mm</td><td>Mid-span</td><td>Balsa</td></tr>
-          <tr><td>Zone III</td><td>118 mm</td><td>Tip region</td><td>Balsa</td></tr>
+          <tr><td>Zone III</td><td>130 mm</td><td>Tip region</td><td>Balsa</td></tr>
           <tr class="hl"><td colspan="2">Ribs 1 &amp; 13</td><td>Critical positions</td><td><strong>Plywood ↑</strong></td></tr>
         </table>
         <div class="callout red" style="margin-top:10px;font-size:0.85rem;">
@@ -957,7 +957,7 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
 
     <div class="fig-row">
       <figure class="fig">
-        <img src="Figures/Rib schematic.png" alt="Rib distribution schematic" loading="lazy">
+        <img src="Figures/rib_schematic.png" alt="Rib distribution schematic" loading="lazy">
         <figcaption>Figure 4.1 — Rib distribution across the half-span (b/2 = 1590 mm). Three spacing zones with plywood reinforcement at critical Ribs 1 and 13. All other 15 ribs remain as balsa.</figcaption>
       </figure>
       <figure class="fig">
@@ -1047,13 +1047,13 @@ V(0) = 67.5 N &nbsp;&nbsp;(maximum shear force at the root)</div>
     <h2 class="sec-title">Academic Sources</h2>
     <div class="divider"></div>
     <ul class="refs">
-      <li><span class="ref-n">[1]</span>J. D. Anderson, <em>Introduction to Flight</em>, 8th ed. McGraw-Hill Education, 2016.</li>
+      <li><span class="ref-n">[1]</span>J. G. Leishman, <em>Introduction to Aerospace Flight Vehicles</em>, Embry-Riddle Aeronautical University, 2026.</li>
       <li><span class="ref-n">[2]</span>J. D. Anderson, <em>Fundamentals of Aerodynamics</em>, 6th ed. McGraw-Hill Education, 2017.</li>
       <li><span class="ref-n">[5]</span>IMechE, <em>UAS Challenge 2026 Rules and Scoring Guidance</em>. Institution of Mechanical Engineers, 2026.</li>
       <li><span class="ref-n">[6]</span>R. T. Whitcomb, "A design approach and selected wind-tunnel results at high subsonic speeds for wing-tip mounted winglets," <em>NASA Technical Note TN D-8260</em>, NASA Langley Research Center, 1976.</li>
-      <li><span class="ref-n">[7]</span>X. Ma and M. Elham, "Aerodynamic optimisation of high aspect ratio wings," <em>Aerospace Science and Technology</em>, 2023.</li>
-      <li><span class="ref-n">[8]</span>T. H. G. Megson, <em>Aircraft Structures for Engineering Students</em>, 6th ed. Butterworth-Heinemann, 2016.</li>
-      <li><span class="ref-n">[9]</span>A. Jameson, "Aerodynamic design via control theory," <em>Journal of Scientific Computing</em>, vol. 3, no. 3, pp. 233–260, 1988.</li>
+      <li><span class="ref-n">[7]</span>X. Ma and M. Elham, "Aerodynamic optimisation of high aspect ratio wings," <em>Aerospace Science and Technology</em>, 2023. Validates the L/D improvement range of 15–25% for AR increases from 6 to 10–12, and provides the L/D maximisation derivation.</li>
+      <li><span class="ref-n">[8]</span>T. H. G. Megson, <em>Aircraft Structures for Engineering Students</em>, 5th ed. Butterworth-Heinemann, 2013.</li>
+      <li><span class="ref-n">[9]</span>ANSYS Inc., <em>Using the Adjoint Solver — 2D Laminar Flow Past a Cylinder</em>, Release 2022 R2, ANSYS Inc., 2022, ANSYS Fluent Tutorial Guide.</li>
       <li><span class="ref-n">[11]</span>I. Kroo, "Drag due to lift: Concepts for prediction and reduction," VKI Lecture Series, von Karman Institute for Fluid Dynamics, 2005.</li>
     </ul>
   </div>
@@ -1066,14 +1066,14 @@ V(0) = 67.5 N &nbsp;&nbsp;(maximum shear force at the root)</div>
     <p>
       Sincere thanks to <strong style="color:#e2e8f0;">Dr O. Adetoro</strong> for his supervision, guidance and support throughout this project,
       and to <strong style="color:#e2e8f0;">Dr G. Alfano</strong> (Module Tutor) and the Department of Mechanical and Aerospace Engineering
-      at Brunel University London for providing the facilities and environment to carry out this work.
+      at Brunel University of London for providing the facilities and environment to carry out this work.
     </p>
     <div class="foot-red-line"></div>
     <h3>Academic Disclaimer</h3>
     <p>
-      This page presents the findings of an individual academic project submitted to Brunel University London.
+      This page presents the findings of an individual academic project submitted to Brunel University of London.
       All simulations, analysis and conclusions are the author's own independent work.
-      This is a personal project showcase page and does not represent the views or positions of Brunel University London.
+      This is a personal project showcase page and does not represent the views or positions of Brunel University of London.
       Third-party sources are cited in accordance with IEEE referencing standards.
       AI tools were used solely for formatting and grammar assistance;
       all technical analysis was independently conducted by the author.
@@ -1086,7 +1086,7 @@ V(0) = 67.5 N &nbsp;&nbsp;(maximum shear force at the root)</div>
       are the author's own independent work and were completed without AI assistance.
     </p>
     <hr class="foot-div">
-    <p class="foot-copy">© 2026 Nicolas Gali &nbsp;·&nbsp; Brunel University London &nbsp;·&nbsp; Department of Mechanical and Aerospace Engineering</p>
+    <p class="foot-copy">© 2026 Nicolas Gali &nbsp;·&nbsp; Brunel University of London &nbsp;·&nbsp; Department of Mechanical and Aerospace Engineering</p>
   </div>
 </footer>
 
