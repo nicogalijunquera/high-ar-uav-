@@ -376,9 +376,9 @@ footer p{font-size:0.82rem;line-height:1.75;margin-bottom:8px}
           This means comparisons are fair — any efficiency gain comes purely from the shape change, not from making a bigger wing.
         </div>
       </div>
-      <figure class="fig fig-tall">
-        <img src="Figures/AIwingCONCEPT.png" alt="High aspect ratio UAV wing concept" loading="lazy">
-        <figcaption>The high aspect ratio wing concept — longer and slimmer than the baseline, designed for maximum glide efficiency.</figcaption>
+      <figure class="fig">
+        <img src="Figures/Matlab/AR1.png" alt="Aspect ratio diagram — wingspan to chord relationship" loading="lazy">
+        <figcaption>Aspect ratio (AR = b²/S = b/c) illustrated schematically. Higher AR wings have lower induced drag — the fundamental aerodynamic motivation for this project. [Anderson, 2017]</figcaption>
       </figure>
     </div>
 
@@ -634,10 +634,16 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
       <div class="acc-b">
         <p style="font-size:0.92rem;color:var(--muted);margin-bottom:6px;">A key question in any CFD study: do the results depend on how fine the mesh is, or have we reached a level of detail where adding more cells makes no meaningful difference? This is called <strong>mesh independence</strong>.</p>
         <p style="font-size:0.92rem;color:var(--muted);margin-bottom:16px;">Multiple mesh densities were tested. The final meshes were selected where the lift and drag coefficients changed by less than 1% with further refinement — confirming the results are reliable and not artificially influenced by mesh resolution.</p>
-        <figure class="fig fig-wide">
-          <img src="Figures/Matlab/mesh_independence_combined.png" alt="Mesh independence study — 2D and 3D combined" loading="lazy">
-          <figcaption>Mesh independence study — 2D (left) and 3D (right). C<sub>L</sub> and C<sub>D</sub> plotted against mesh element count. The plateau of each curve confirms that the selected mesh density produces mesh-independent results.</figcaption>
-        </figure>
+        <div class="fig-row">
+          <figure class="fig">
+            <img src="Figures/Matlab/mesh_independence_3D_v2.png" alt="3D mesh independence study — AR=10 baseline" loading="lazy">
+            <figcaption>3D mesh independence — AR = 10 wing (Model 2). C<sub>L</sub> and C<sub>D</sub> plotted against mesh element count. The plateau confirms mesh-independent results at the selected density.</figcaption>
+          </figure>
+          <figure class="fig">
+            <img src="Figures/Matlab/mesh_independence_model3.png" alt="3D mesh independence study — Model 3 with winglet" loading="lazy">
+            <figcaption>3D mesh independence — Model 3 (AR = 10 + winglet). Separately verified to confirm the winglet geometry did not introduce mesh-sensitivity in the tip region.</figcaption>
+          </figure>
+        </div>
       </div>
     </div>
 
@@ -651,7 +657,7 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
         <p style="font-size:0.92rem;color:var(--muted);margin-bottom:6px;">Convergence means the simulation has reached a stable, self-consistent solution — the numbers are no longer changing between iterations. Convergence was assessed on <strong>aerodynamic force coefficients</strong> (lift and drag), not just solver residuals, as this is a more physically meaningful criterion.</p>
         <p style="font-size:0.92rem;color:var(--muted);margin-bottom:16px;">Criterion: less than 1% variation in C<sub>L</sub> and C<sub>D</sub> over the final 200 iterations.</p>
         <figure class="fig fig-wide">
-          <img src="Figures/Matlab/residuals_plot_3D.png" alt="3D solver residuals convergence" loading="lazy">
+          <img src="Figures/residuals_plot.png" alt="3D solver residuals convergence" loading="lazy">
           <figcaption>3D solver residuals — all governing equations converge to below 10⁻⁴. Force coefficient convergence confirmed separately as the primary criterion (&lt;1% change in C<sub>L</sub> and C<sub>D</sub>).</figcaption>
         </figure>
       </div>
@@ -693,7 +699,7 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
         <p style="font-size:0.88rem;color:var(--muted);margin-bottom:12px;">Before trusting the optimisation results, the 2D simulation setup was validated against published experimental NACA 4415 data. The close agreement confirms the solver settings are correct.</p>
         <figure class="fig">
           <img src="Figures/NACA 4415 Cl vs AoA.png" alt="NACA 4415 Cl vs angle of attack — CFD validation" loading="lazy">
-          <figcaption>C<sub>L</sub> vs angle of attack for NACA 4415 at Re = 8.6×10⁵. CFD predictions compared against published aerofoil data — strong agreement validates the 2D simulation methodology.</figcaption>
+          <figcaption>C<sub>L</sub> vs angle of attack for NACA 4415 across the Reynolds number range tested. CFD predictions compared against published aerofoil data — strong agreement validates the 2D simulation methodology.</figcaption>
         </figure>
       </div>
     </div>
@@ -720,8 +726,8 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
             <figcaption>Stage 2 — Intermediate stage. Lower surface beginning to modify; upper surface largely unchanged.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="Figures/2dmorphing4.png" alt="Aerofoil optimisation — stage 4, final" loading="lazy">
-            <figcaption>Stage 4 — Final optimised profile. Largest change concentrated at the lower trailing edge, reducing the adverse pressure gradient.</figcaption>
+            <img src="Figures/AoA22optimised.png" alt="Optimised aerofoil at high angle of attack" loading="lazy">
+            <figcaption>Stage 4 — Final optimised profile at AoA = 22° (near stall). The adjoint-modified trailing edge improves flow attachment at high incidence compared to the NACA 4415 baseline.</figcaption>
           </figure>
         </div>
         <div class="fig-row mt">
@@ -730,8 +736,8 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
             <figcaption>C<sub>p</sub> distribution at α = 1°. The optimised profile (dashed) shows reduced suction magnitude on the lower surface near the trailing edge — consistent with the geometric modification and the drag reduction mechanism.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="Figures/AoA22optimised.png" alt="Optimised aerofoil at 22 degrees AoA" loading="lazy">
-            <figcaption>Figure 5.5 — Final optimised aerofoil at AoA = 22° (near stall). Improved trailing edge flow attachment compared to the NACA 4415 baseline at high incidence.</figcaption>
+            <img src="Figures/ClvsAoA.png" alt="CL vs angle of attack — baseline vs optimised aerofoil" loading="lazy">
+            <figcaption>C<sub>L</sub> vs AoA — NACA 4415 baseline compared to the final adjoint-optimised profile. The optimised aerofoil maintains or improves lift across the operating range, confirming the optimisation did not sacrifice lift while reducing drag.</figcaption>
           </figure>
         </div>
       </div>
@@ -782,44 +788,40 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
         <span style="display:flex;align-items:center;gap:6px;"><span class="acc-badge">Figures</span><span class="ico">▾</span></span>
       </div>
       <div class="acc-b">
-        <h3 style="color:var(--navy);font-weight:700;margin-bottom:6px;">Winglet Concept Iteration</h3>
-        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">Design iteration exploring cant angle, sweep, and height-to-span ratio before arriving at the final modular configuration.</p>
+        <h3 style="color:var(--navy);font-weight:700;margin-bottom:6px;">Final Modular Winglet — Design Variants</h3>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">These images show views of the final modular winglet design, exploring different perspectives and geometric parameters of the adopted configuration — cant angle, sweep, and the plug-in interface at the wingtip rib.</p>
         <div class="fig-row">
           <figure class="fig">
-            <img src="Figures/tipConcept1.png" alt="Winglet concept 1" loading="lazy">
-            <figcaption>Figure 3.3(a) — Concept 1: initial vertical winglet. Explores the baseline span-extension principle.</figcaption>
+            <img src="Figures/tipConcept1.png" alt="Final winglet — view 1" loading="lazy">
+            <figcaption>Figure 3.3(a) — Final winglet design, view 1. The modular geometry is designed to seat into the wingtip rib without structural modification to the main wing.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="Figures/tipConcept2.png" alt="Winglet concept 2" loading="lazy">
-            <figcaption>Figure 3.3(b) — Concept 2: canted winglet with sweep. Improved flow turning and reduced juncture drag vs. vertical configuration.</figcaption>
+            <img src="Figures/tipConcept2.png" alt="Final winglet — view 2, canted configuration" loading="lazy">
+            <figcaption>Figure 3.3(b) — Final winglet, cant angle and sweep detail. The selected cant angle balances induced drag reduction against juncture drag at the wing-winglet junction.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="Figures/tipConcept3.png" alt="Winglet concept 3 — final" loading="lazy">
-            <figcaption>Figure 3.3(c) — Final concept: optimised cant angle and sweep. Modular plug-in interface designed to seat into the wingtip rib.</figcaption>
+            <img src="Figures/tipConcept3.png" alt="Final winglet — view 3, full geometry" loading="lazy">
+            <figcaption>Figure 3.3(c) — Final winglet full geometry. The modular plug-in interface allows field removal for transport — directly addressing IMechE UAS Challenge practicality requirements.</figcaption>
           </figure>
         </div>
-        <div class="fig-row mt">
+        <h3 style="color:var(--navy);font-weight:700;margin:24px 0 6px;">Wingtip Vortex — Without vs With Winglet</h3>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">The pathline visualisations below show how the winglet disrupts and weakens the wingtip vortex. The vortex that forms without a winglet represents energy permanently lost to the wake; the winglet redirects this energy, effectively recovering it as a forward force component — the mechanism behind the AR<sub>eff</sub> increase from 10 to 10.34.</p>
+        <div class="fig-row">
           <figure class="fig">
-            <img src="Figures/wingletclose.png" alt="Final winglet — close-up seated in wingtip rib" loading="lazy">
-            <figcaption>Final modular winglet seated in the wingtip rib. Plug-in interface allows removal without structural modification to the main wing.</figcaption>
+            <img src="Figures/wingtipvortex.png" alt="Wingtip vortex — no winglet" loading="lazy">
+            <figcaption>Wingtip vortex without winglet — strong, tightly wound spiral. Pressure equialisation between upper and lower surfaces drives intense rotation, dissipating energy into the wake.</figcaption>
           </figure>
           <figure class="fig">
-            <img src="Figures/wingtipvortex2.png" alt="Wingtip vortex — with winglet" loading="lazy">
-            <figcaption>Vortex structure with winglet installed. Reduction in vortex strength contributes to the AR<sub>eff</sub> increase: 10 → 10.34 (CFD equivalence method).</figcaption>
+            <img src="Figures/wingtipvortex2.png" alt="Wingtip vortex — with winglet installed" loading="lazy">
+            <figcaption>Wingtip vortex with winglet installed — visibly disrupted and weakened. The winglet surface intercepts the cross-flow, breaking up the coherent vortex structure and recovering the associated induced drag penalty.</figcaption>
           </figure>
         </div>
         <h3 style="color:var(--navy);font-weight:700;margin:24px 0 6px;">3D Pressure Contours</h3>
         <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px;">Pressure contours confirm expected aerodynamic behaviour: strong suction peak at the leading edge, spanwise pressure gradient driving tip vortex formation, and the winglet's influence on the tip flow field.</p>
-        <div class="fig-row">
-          <figure class="fig">
-            <img src="Figures/2Pressure3Dcontour.png" alt="3D pressure contour — upper surface" loading="lazy">
-            <figcaption>3D pressure contour — upper surface at α = 1°. Clear suction peak (dark blue) at the leading edge with spanwise pressure gradient visible toward the tip.</figcaption>
-          </figure>
-          <figure class="fig">
-            <img src="Figures/Pressure3Dcontour.png" alt="3D pressure distribution — side view" loading="lazy">
-            <figcaption>3D pressure distribution side view — pressure differential between upper (suction) and lower (pressure) surfaces is the source of lift.</figcaption>
-          </figure>
-        </div>
+        <figure class="fig fig-wide">
+          <img src="Figures/2Pressure3Dcontour.png" alt="3D pressure contour — upper surface AR=10 wing with winglet" loading="lazy">
+          <figcaption>3D pressure distribution on the upper surface of the final wing (AR = 10 + winglet) at α = 1°, V = 31.5 m/s. The colour magnitude is broadly consistent across the span — strong suction (dark blue) accumulates at the leading edge and gradually recovers toward the trailing edge. A localised pressure increase is visible at the wingtip where the winglet redirects the tip flow. The spanwise pressure gradient visible from root to tip is physically consistent with the elliptic lift distribution assumed in the structural analysis — supporting the conservative load case used to size the rib layout.</figcaption>
+        </figure>
       </div>
     </div>
 
@@ -875,23 +877,12 @@ M_root ∝ √AR  →  √10/√6.3 ≈ 1.26  (+26%)<span class="eq-ref">Eqs. 3.
     <!-- CHARTS -->
     <div class="fig-row mt">
       <figure class="fig">
-        <img src="Figures/Matlab/LDcomparisonanalysis.png" alt="L/D comparison across all five models" loading="lazy">
-        <figcaption>Aerodynamic efficiency comparison across all five models — absolute L/D, efficiency per unit AR, and percentage improvement relative to the BrUAS 2022 baseline. Each step delivers a positive, non-diminishing contribution.</figcaption>
-      </figure>
-      <figure class="fig">
         <img src="Figures/Matlab/weighted_efficiency.png" alt="Weighted aerodynamic efficiency" loading="lazy">
-        <figcaption>Weighted efficiency analysis — L/D improvement per unit AR increase. Confirms each design step contributes positive returns for the selected design sequence.</figcaption>
-      </figure>
-    </div>
-
-    <div class="fig-row mt">
-      <figure class="fig">
-        <img src="Figures/Matlab/Lift_vs_AoA_report_style.png" alt="Lift vs angle of attack — Model 1 vs Model 5" loading="lazy">
-        <figcaption>Lift vs angle of attack — Baseline (Model 1) vs Final configuration (Model 5) across α = 1°–16°. Model 5 generates higher lift at all angles; the increased wing span raises the lift curve slope.</figcaption>
+        <figcaption>Weighted efficiency analysis — L/D improvement per unit AR increase across all five models. Confirms each design step delivers positive, additive returns.</figcaption>
       </figure>
       <figure class="fig">
-        <img src="Figures/Matlab/LD_vs_AoA.png" alt="L/D vs angle of attack" loading="lazy">
-        <figcaption>L/D vs angle of attack — Model 5 maintains superior efficiency across the full operating range. The peak L/D advantage is consistent with the AR-driven induced drag reduction predicted by theory.</figcaption>
+        <img src="Figures/Matlab/Lift_vs_AoA.png" alt="Lift vs angle of attack — Model 1 vs Model 5" loading="lazy">
+        <figcaption>Lift vs angle of attack — Baseline (Model 1) vs Final configuration (Model 5). Model 5 generates higher lift across the operating range, consistent with the larger effective span and improved aerofoil profile.</figcaption>
       </figure>
     </div>
 
